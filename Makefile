@@ -6,7 +6,7 @@
 #    By: nguelfi <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/05/04 12:33:13 by nguelfi           #+#    #+#              #
-#    Updated: 2017/05/05 14:39:45 by nguelfi          ###   ########.fr        #
+#    Updated: 2017/05/04 16:35:27 by nguelfi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,22 +18,27 @@ OBJ_DIR = ./obj
 
 SRC = input_checker.c ft_solver.c field_maker.c main.c 
 BIN = ${SRC:%.c=%.o}
-OBJ = $(addprefix $(SRC_DIR)/,$(SRC))
+OBJ = $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
 CFLAGS = -Wall -Werror -Wextra
 
 LIBFT = $(LIB_DIR)/libft.a
 
-all: $(NAME)
+all: $(LIBFT) $(NAME)
 
-$(NAME):
+$(LIBFT):
 	@$(MAKE) -C $(LIB_DIR) --no-print-directory
-	gcc $(CFLAGS) $(OBJ) -I $(LIB_DIR) -I $(INCLUDE) -c
-	gcc $(CFLAGS) $(BIN) -L $(LIB_DIR) -l ft -o $(NAME)
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
+	mkdir -p $(OBJ_DIR)
+	gcc $(CFLAGS) -I $(LIB_DIR) -I $(INCLUDE) -o $@ -c $<
+
+$(NAME): $(OBJ)
+	gcc $(CFLAGS) $(OBJ) -L $(LIB_DIR) -l ft -o $(NAME)
 
 clean:
 	@$(MAKE) clean -C $(LIB_DIR)
-	/bin/rm -rf $(BIN)
+	/bin/rm -rf $(OBJ_DIR)
 
 fclean: clean
 	@$(MAKE) fclean -C $(LIB_DIR)
